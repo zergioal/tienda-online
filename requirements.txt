@@ -1,0 +1,8 @@
+Flask-AppBuilder==4.3.11
+Flask==2.3.3
+SQLAlchemy==1.4.50
+Flask-SQLAlchemy==3.0.5
+WTForms==3.0.1
+Flask-WTF==1.1.1
+email-validator==2.0.0
+Werkzeug==2.3.7

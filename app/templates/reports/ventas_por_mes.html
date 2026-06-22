@@ -1,0 +1,73 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="page-header">
+    <h2><i class="fa fa-line-chart"></i> Reporte: Ventas por Mes</h2>
+    <a href="/reportes/index" class="btn btn-default btn-sm"><i class="fa fa-arrow-left"></i> Volver</a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="panel panel-primary">
+        <div class="panel-heading"><h3 class="panel-title">Gráfica de Ventas Mensuales</h3></div>
+        <div class="panel-body">
+          <canvas id="ventasChart" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Resumen</h3></div>
+        <div class="panel-body">
+          <p><strong>Total períodos:</strong> {{ datos|length }}</p>
+          <p><strong>Total ventas:</strong> ${{ datos|sum(attribute='ventas')|round(2) }}</p>
+          <p><strong>Total órdenes:</strong> {{ datos|sum(attribute='ordenes') }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Detalle por Período</h3></div>
+    <div class="panel-body">
+      <table class="table table-striped table-hover">
+        <thead><tr><th>Período</th><th>Órdenes</th><th>Total Ventas</th></tr></thead>
+        <tbody>
+          {% for d in datos %}
+          <tr>
+            <td>{{ d.periodo }}</td>
+            <td>{{ d.ordenes }}</td>
+            <td>${{ "%.2f"|format(d.ventas) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="text-center text-muted">Sin datos registrados</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+const ctx = document.getElementById('ventasChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: {{ labels|safe }},
+    datasets: [{
+      label: 'Total Ventas ($)',
+      data: {{ valores|safe }},
+      backgroundColor: 'rgba(54, 162, 235, 0.7)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
+{% endblock %}

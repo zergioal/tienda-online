@@ -1,0 +1,35 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="page-header">
+    <h2><i class="fa fa-bar-chart"></i> Panel de Reportes</h2>
+    <p class="text-muted">TechStore - Accesorios de Computadoras y Servicio Técnico</p>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <a href="/reportes/ventas_por_mes" class="text-decoration-none">
+        <div class="panel panel-primary">
+          <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-line-chart"></i> Ventas por Mes</h3></div>
+          <div class="panel-body">Totales de ventas agrupados por mes. Incluye gráfica de barras.</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/reportes/productos_mas_vendidos" class="text-decoration-none">
+        <div class="panel panel-success">
+          <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-trophy"></i> Productos más Vendidos</h3></div>
+          <div class="panel-body">Top 10 productos por cantidad vendida. Incluye gráfica de barras horizontal.</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/reportes/servicios_por_estado" class="text-decoration-none">
+        <div class="panel panel-warning">
+          <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-pie-chart"></i> Servicios por Estado</h3></div>
+          <div class="panel-body">Distribución de tickets de servicio técnico por estado.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
