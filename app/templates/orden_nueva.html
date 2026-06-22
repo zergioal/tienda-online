@@ -13,7 +13,7 @@
   {% endwith %}
 
   <form method="POST" action="/nueva-orden/guardar" id="ordenForm">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
     <!-- Cabecera de la orden -->
     <div class="panel panel-default">
@@ -86,7 +86,7 @@
       <button type="submit" class="btn btn-primary btn-lg" id="btnGuardar" disabled>
         <i class="fa fa-save"></i> Guardar Venta
       </button>
-      <a href="/orden/list" class="btn btn-default btn-lg">
+      <a href="/ordenview/list/" class="btn btn-default btn-lg">
         <i class="fa fa-times"></i> Cancelar
       </a>
     </div>
