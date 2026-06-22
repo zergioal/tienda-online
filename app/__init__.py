@@ -49,7 +49,6 @@ def create_app():
             icon='fa-wrench', category='Servicios',
             category_icon='fa-cogs'
         )
-
         ab.add_view(
             ReportesView, 'Panel de Reportes',
             icon='fa-bar-chart', category='Reportes',
@@ -72,13 +71,72 @@ def create_app():
             href='/reportes/servicios_por_estado'
         )
 
-        _ensure_roles(ab)
         db.create_all()
+        _setup_roles(ab)
 
     return app
 
 
-def _ensure_roles(ab):
+def _setup_roles(ab):
+    # Crear roles si no existen
     for role_name in ['Admin', 'Supervisor', 'Usuario']:
         if not ab.sm.find_role(role_name):
             ab.sm.add_role(role_name)
+
+    # ── Supervisor: servicios técnicos + órdenes/clientes (lectura) + reportes ──
+    _assign_perms(ab, 'Supervisor', [
+        # Servicios técnicos — gestión completa
+        ('can_list',                    'ServicioTecnicoView'),
+        ('can_show',                    'ServicioTecnicoView'),
+        ('can_add',                     'ServicioTecnicoView'),
+        ('can_edit',                    'ServicioTecnicoView'),
+        ('menu_access',                 'Servicios'),
+        ('menu_access',                 'Servicio Técnico'),
+        # Órdenes — solo lectura
+        ('can_list',                    'OrdenView'),
+        ('can_show',                    'OrdenView'),
+        # Clientes — solo lectura
+        ('can_list',                    'ClienteView'),
+        ('can_show',                    'ClienteView'),
+        ('menu_access',                 'Ventas'),
+        ('menu_access',                 'Órdenes'),
+        ('menu_access',                 'Clientes'),
+        # Reportes — acceso total
+        ('can_index',                   'ReportesView'),
+        ('can_ventas_por_mes',          'ReportesView'),
+        ('can_productos_mas_vendidos',  'ReportesView'),
+        ('can_servicios_por_estado',    'ReportesView'),
+        ('menu_access',                 'Reportes'),
+        ('menu_access',                 'Panel de Reportes'),
+        ('menu_access',                 'Ventas por Mes'),
+        ('menu_access',                 'Productos más Vendidos'),
+        ('menu_access',                 'Servicios por Estado'),
+    ])
+
+    # ── Usuario: catálogo (lectura) + realizar compras ──────────────────────────
+    _assign_perms(ab, 'Usuario', [
+        # Catálogo — solo lectura
+        ('can_list',    'ProductoView'),
+        ('can_show',    'ProductoView'),
+        ('can_list',    'CategoriaView'),
+        ('can_show',    'CategoriaView'),
+        ('menu_access', 'Catálogo'),
+        ('menu_access', 'Productos'),
+        ('menu_access', 'Categorías'),
+        # Nueva Venta — puede comprar
+        ('can_nueva',   'NuevaOrdenView'),
+        ('can_guardar', 'NuevaOrdenView'),
+        ('can_precio',  'NuevaOrdenView'),
+        ('menu_access', 'Ventas'),
+        ('menu_access', 'Nueva Venta'),
+    ])
+
+
+def _assign_perms(ab, role_name, perms):
+    role = ab.sm.find_role(role_name)
+    if not role:
+        return
+    for perm_name, view_name in perms:
+        pv = ab.sm.find_permission_view_menu(perm_name, view_name)
+        if pv:
+            ab.sm.add_permission_role(role, pv)
