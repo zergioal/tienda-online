@@ -17,7 +17,7 @@ def create_app():
         from .models import Categoria, Producto, Cliente, Orden, DetalleOrden, ServicioTecnico
         from .views import (
             CategoriaView, ProductoView, ClienteView,
-            OrdenView, ServicioTecnicoView, ReportesView
+            OrdenView, NuevaOrdenView, ServicioTecnicoView, ReportesView
         )
 
         ab.add_view(
@@ -37,6 +37,11 @@ def create_app():
         ab.add_view(
             OrdenView, 'Órdenes',
             icon='fa-file-text', category='Ventas'
+        )
+        ab.add_view(
+            NuevaOrdenView, 'Nueva Venta',
+            icon='fa-plus-circle', category='Ventas',
+            href='/nueva-orden/nueva'
         )
         ab.add_view(
             ServicioTecnicoView, 'Servicio Técnico',

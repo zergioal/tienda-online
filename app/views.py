@@ -2,7 +2,7 @@ from flask_appbuilder import ModelView, expose
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access
-from flask import render_template
+from flask import render_template, request, redirect, flash, jsonify
 from sqlalchemy import func
 from . import db
 from .models import Categoria, Producto, Cliente, Orden, DetalleOrden, ServicioTecnico
@@ -58,6 +58,75 @@ class OrdenView(ModelView):
     add_columns = ['fecha', 'cliente', 'total', 'estado']
     edit_columns = ['fecha', 'cliente', 'total', 'estado']
     related_views = [DetalleOrdenView]
+
+
+class NuevaOrdenView(BaseView):
+    """Vista personalizada para registrar una orden con sus productos en un solo formulario."""
+    route_base = '/nueva-orden'
+    default_view = 'nueva'
+
+    @expose('/nueva', methods=['GET'])
+    @has_access
+    def nueva(self):
+        clientes = db.session.query(Cliente).order_by(Cliente.apellido).all()
+        productos = db.session.query(Producto).filter(Producto.stock > 0).order_by(Producto.nombre).all()
+        return self.render_template('orden_nueva.html', clientes=clientes, productos=productos)
+
+    @expose('/guardar', methods=['POST'])
+    @has_access
+    def guardar(self):
+        cliente_id = request.form.get('cliente_id')
+        estado = request.form.get('estado', 'Pendiente')
+        productos_ids = request.form.getlist('producto_id[]')
+        cantidades = request.form.getlist('cantidad[]')
+
+        if not cliente_id:
+            flash('Debe seleccionar un cliente.', 'warning')
+            return redirect('/nueva-orden/nueva')
+        if not productos_ids:
+            flash('Debe agregar al menos un producto.', 'warning')
+            return redirect('/nueva-orden/nueva')
+
+        orden = Orden(cliente_id=int(cliente_id), estado=estado, total=0)
+        db.session.add(orden)
+        db.session.flush()
+
+        total = 0
+        errores = []
+        for prod_id, qty_str in zip(productos_ids, cantidades):
+            prod = db.session.get(Producto, int(prod_id))
+            qty = int(qty_str) if qty_str.isdigit() else 1
+            if qty <= 0:
+                continue
+            if prod.stock < qty:
+                errores.append(f'Stock insuficiente para {prod.nombre} (disponible: {prod.stock})')
+                continue
+            subtotal = round(prod.precio * qty, 2)
+            total += subtotal
+            db.session.add(DetalleOrden(
+                orden_id=orden.id, producto_id=prod.id,
+                cantidad=qty, precio_unitario=prod.precio, subtotal=subtotal
+            ))
+            prod.stock -= qty
+
+        if errores:
+            db.session.rollback()
+            for e in errores:
+                flash(e, 'danger')
+            return redirect('/nueva-orden/nueva')
+
+        orden.total = round(total, 2)
+        db.session.commit()
+        flash(f'Orden #{orden.id} registrada correctamente — Total: Bs. {orden.total:.2f}', 'success')
+        return redirect('/orden/list')
+
+    @expose('/precio/<int:producto_id>')
+    @has_access
+    def precio(self, producto_id):
+        prod = db.session.get(Producto, producto_id)
+        if prod:
+            return jsonify({'precio': prod.precio, 'stock': prod.stock})
+        return jsonify({'precio': 0, 'stock': 0})
 
 
 class ServicioTecnicoView(ModelView):
