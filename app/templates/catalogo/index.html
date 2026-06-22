@@ -1,0 +1,93 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Header tienda -->
+  <div style="background:linear-gradient(135deg,#12263f,#2c7be5);color:#fff;border-radius:12px;padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <h2 style="margin:0;font-weight:800;"><i class="fa fa-laptop"></i> Catálogo TechStore</h2>
+      <p style="margin:6px 0 0;opacity:.85;">Accesorios de computadoras — Precios en Bolivianos</p>
+    </div>
+    <a href="/catalogo/carrito" style="background:#fff;color:#2c7be5;border-radius:10px;padding:12px 22px;font-weight:700;text-decoration:none;font-size:15px;white-space:nowrap;">
+      <i class="fa fa-shopping-cart"></i> Carrito
+      {% if total_items > 0 %}
+        <span style="background:#e63757;color:#fff;border-radius:50%;padding:2px 7px;font-size:12px;margin-left:4px;">{{ total_items }}</span>
+      {% endif %}
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }} alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>{{ msg }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="row">
+
+    <!-- Sidebar: categorías -->
+    <div class="col-md-2">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h4 class="panel-title"><i class="fa fa-tags"></i> Categorías</h4></div>
+        <div class="panel-body" style="padding:8px;">
+          <a href="/catalogo/" style="display:block;padding:8px 12px;border-radius:6px;margin-bottom:3px;font-weight:{% if not cat_seleccionada %}700{% else %}400{% endif %};color:{% if not cat_seleccionada %}#2c7be5{% else %}#12263f{% endif %};background:{% if not cat_seleccionada %}#eaf2ff{% else %}transparent{% endif %};text-decoration:none;">
+            <i class="fa fa-th"></i> Todos
+          </a>
+          {% for cat in categorias %}
+          <a href="/catalogo/?cat={{ cat.id }}" style="display:block;padding:8px 12px;border-radius:6px;margin-bottom:3px;font-weight:{% if cat_seleccionada == cat.id %}700{% else %}400{% endif %};color:{% if cat_seleccionada == cat.id %}#2c7be5{% else %}#12263f{% endif %};background:{% if cat_seleccionada == cat.id %}#eaf2ff{% else %}transparent{% endif %};text-decoration:none;">
+            <i class="fa fa-tag"></i> {{ cat.nombre }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de productos -->
+    <div class="col-md-10">
+      {% if not productos %}
+        <div class="panel panel-default"><div class="panel-body text-center text-muted" style="padding:40px;">
+          <i class="fa fa-inbox" style="font-size:48px;display:block;margin-bottom:12px;"></i>
+          Sin productos disponibles en esta categoría.
+        </div></div>
+      {% else %}
+      <div class="row">
+        {% for p in productos %}
+        <div class="col-md-3 col-sm-4 col-xs-6">
+          <div class="panel panel-default" style="border-radius:12px;overflow:hidden;transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(44,123,229,.18)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+            <!-- Imagen placeholder por categoría -->
+            <div style="background:linear-gradient(135deg,#eaf2ff,#d0e4ff);height:120px;display:flex;align-items:center;justify-content:center;">
+              {% set icons = {'Teclados':'keyboard-o','Mouse':'crosshairs','Auriculares':'headphones','Almacenamiento':'hdd-o','Camaras Web':'video-camera','Cables':'plug'} %}
+              <i class="fa fa-{{ icons.get(p.categoria.nombre, 'laptop') }}" style="font-size:52px;color:#2c7be5;opacity:.6;"></i>
+            </div>
+
+            <div class="panel-body" style="padding:14px;">
+              <p style="font-size:11px;color:#95aac9;margin:0 0 4px;text-transform:uppercase;letter-spacing:.5px;">{{ p.categoria.nombre }}</p>
+              <h5 style="font-weight:700;margin:0 0 8px;font-size:13px;line-height:1.4;min-height:36px;">{{ p.nombre }}</h5>
+              <p style="font-size:11px;color:#6b7f96;margin:0 0 10px;min-height:30px;">{{ p.descripcion[:60] }}{% if p.descripcion|length > 60 %}…{% endif %}</p>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <span style="font-size:18px;font-weight:800;color:#2c7be5;">Bs. {{ "%.2f"|format(p.precio) }}</span>
+                <span style="font-size:11px;color:{% if p.stock <= 3 %}#e63757{% else %}#00d97e{% endif %};font-weight:600;">
+                  {% if p.stock <= 3 %}¡Últimas {{ p.stock }}!{% else %}Stock: {{ p.stock }}{% endif %}
+                </span>
+              </div>
+
+              <form method="POST" action="/catalogo/agregar/{{ p.id }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-primary btn-block btn-sm">
+                  <i class="fa fa-cart-plus"></i> Agregar al carrito
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

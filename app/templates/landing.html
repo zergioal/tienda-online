@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechStore — Accesorios y Servicio Técnico</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f8fb; color: #12263f; }
+
+    /* ── Navbar ── */
+    .top-bar {
+      background: #12263f;
+      padding: 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 62px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .top-bar .brand { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: .5px; text-decoration: none; }
+    .top-bar .brand span { color: #2c7be5; }
+    .btn-login {
+      background: #2c7be5; color: #fff !important; border: none;
+      padding: 9px 24px; border-radius: 6px; font-weight: 600;
+      text-decoration: none; font-size: 14px; transition: background .2s;
+    }
+    .btn-login:hover { background: #1a5fc8; color: #fff; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #12263f 0%, #1e3f6e 60%, #2c7be5 100%);
+      color: #fff;
+      padding: 90px 30px 80px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 18px; line-height: 1.15; }
+    .hero h1 span { color: #60aeff; }
+    .hero p { font-size: 20px; opacity: .85; max-width: 580px; margin: 0 auto 36px; line-height: 1.6; }
+    .hero .btn-hero {
+      background: #fff; color: #2c7be5; font-weight: 700;
+      padding: 14px 40px; border-radius: 8px; font-size: 16px;
+      text-decoration: none; display: inline-block;
+      box-shadow: 0 4px 18px rgba(0,0,0,.2); transition: transform .2s;
+    }
+    .hero .btn-hero:hover { transform: translateY(-3px); color: #1a5fc8; }
+
+    /* ── Categorías ── */
+    .section { padding: 60px 30px; }
+    .section-title { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #12263f; }
+    .section-sub { text-align: center; color: #6b7f96; margin-bottom: 40px; font-size: 16px; }
+
+    .cat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(18,38,63,.08);
+      margin-bottom: 24px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .cat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(44,123,229,.15); }
+    .cat-card i { font-size: 40px; margin-bottom: 14px; display: block; }
+    .cat-card h4 { font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+    .cat-card p { color: #6b7f96; font-size: 13px; }
+
+    /* ── Servicio técnico ── */
+    .service-section {
+      background: linear-gradient(135deg, #1e3f6e, #2c7be5);
+      color: #fff;
+      padding: 60px 30px;
+      text-align: center;
+    }
+    .service-section h2 { font-size: 32px; font-weight: 700; margin-bottom: 14px; }
+    .service-section p { font-size: 17px; opacity: .88; max-width: 560px; margin: 0 auto 30px; }
+    .service-item { margin-bottom: 20px; }
+    .service-item i { font-size: 28px; margin-bottom: 10px; color: #60aeff; }
+    .service-item h5 { font-weight: 700; margin-bottom: 4px; }
+    .service-item p { font-size: 13px; opacity: .8; }
+
+    /* ── Footer ── */
+    footer {
+      background: #12263f;
+      color: #95aac9;
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+    }
+    footer strong { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="top-bar">
+    <a class="brand" href="/"><i class="fa fa-desktop"></i> Tech<span>Store</span></a>
+    <a href="/login" class="btn-login"><i class="fa fa-sign-in"></i> Iniciar Sesión</a>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Accesorios de PC &amp;<br><span>Servicio Técnico</span></h1>
+    <p>Todo lo que necesitas para tu computadora: teclados, mouse, auriculares, almacenamiento y más. También reparamos tu equipo.</p>
+    <a href="/login" class="btn-hero"><i class="fa fa-sign-in"></i> &nbsp;Acceder al Sistema</a>
+  </div>
+
+  <!-- Categorías -->
+  <div class="section" style="background:#f5f8fb;">
+    <h2 class="section-title">Nuestros Productos</h2>
+    <p class="section-sub">Catálogo de accesorios de computadoras</p>
+    <div class="container-fluid">
+      <div class="row" style="max-width:1000px; margin:0 auto;">
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-keyboard-o" style="color:#2c7be5;"></i>
+            <h4>Teclados</h4>
+            <p>Mecánicos, membrana y gaming con retroiluminación RGB</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-crosshairs" style="color:#00d97e;"></i>
+            <h4>Mouse</h4>
+            <p>Ópticos, inalámbricos y gaming de alta precisión</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-headphones" style="color:#e63757;"></i>
+            <h4>Auriculares</h4>
+            <p>Headsets con micrófono y cancelación de ruido</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-hdd-o" style="color:#f6c343;"></i>
+            <h4>Almacenamiento</h4>
+            <p>SSD, HDD y memorias USB de alta velocidad</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-video-camera" style="color:#6f42c1;"></i>
+            <h4>Cámaras Web</h4>
+            <p>Webcams HD y Full HD con micrófono integrado</p>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="cat-card">
+            <i class="fa fa-plug" style="color:#17a2b8;"></i>
+            <h4>Cables y Hubs</h4>
+            <p>HDMI, USB 3.0, adaptadores y hubs multipuerto</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Servicio Técnico -->
+  <div class="service-section">
+    <h2><i class="fa fa-wrench"></i> Servicio Técnico</h2>
+    <p>Diagnóstico y reparación profesional de equipos de cómputo con seguimiento en tiempo real.</p>
+    <div class="container-fluid">
+      <div class="row" style="max-width:700px; margin:30px auto 0;">
+        <div class="col-sm-4 service-item">
+          <i class="fa fa-search"></i>
+          <h5>Diagnóstico</h5>
+          <p>Evaluación completa del equipo</p>
+        </div>
+        <div class="col-sm-4 service-item">
+          <i class="fa fa-cogs"></i>
+          <h5>Reparación</h5>
+          <p>Hardware, software y limpieza</p>
+        </div>
+        <div class="col-sm-4 service-item">
+          <i class="fa fa-check-circle"></i>
+          <h5>Seguimiento</h5>
+          <p>Estado en tiempo real del servicio</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <strong>TechStore</strong> &mdash; Accesorios de Computadoras y Servicio Técnico &copy; 2025
+  </footer>
+
+</body>
+</html>
