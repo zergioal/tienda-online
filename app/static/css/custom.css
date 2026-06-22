@@ -1,0 +1,119 @@
+/* ── Variables de color ─────────────────────────────── */
+:root {
+  --primary:   #2c7be5;
+  --success:   #00d97e;
+  --warning:   #f6c343;
+  --danger:    #e63757;
+  --dark:      #12263f;
+  --muted:     #95aac9;
+  --bg:        #f5f8fb;
+  --card-shadow: 0 2px 12px rgba(18,38,63,.08);
+}
+
+/* ── Layout general ─────────────────────────────────── */
+body { background: var(--bg) !important; font-family: 'Segoe UI', sans-serif; }
+
+.navbar { background: var(--dark) !important; border: none; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.navbar-brand { color: #fff !important; font-weight: 700; font-size: 20px; letter-spacing: .5px; }
+.navbar-nav > li > a { color: #c5d5e8 !important; }
+.navbar-nav > li > a:hover { color: #fff !important; background: rgba(255,255,255,.08) !important; }
+.navbar-nav > .active > a { color: #fff !important; background: var(--primary) !important; }
+
+/* ── Sidebar ────────────────────────────────────────── */
+.sidebar-nav { background: #fff; border-right: 1px solid #e3ebf6; min-height: 100vh; }
+.sidebar-nav li a { color: var(--dark); padding: 10px 18px; border-radius: 6px; margin: 2px 8px; display: block; }
+.sidebar-nav li a:hover { background: #eaf2ff; color: var(--primary); text-decoration: none; }
+
+/* ── Panels → Cards ─────────────────────────────────── */
+.panel {
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: var(--card-shadow) !important;
+  background: #fff;
+}
+.panel-heading {
+  border-radius: 10px 10px 0 0 !important;
+  font-weight: 600;
+  border-bottom: 1px solid #e3ebf6 !important;
+  background: #fff !important;
+  color: var(--dark) !important;
+}
+.panel-primary > .panel-heading { background: var(--primary) !important; color: #fff !important; border-bottom: none !important; }
+.panel-success > .panel-heading  { background: var(--success)  !important; color: #fff !important; border-bottom: none !important; }
+.panel-warning > .panel-heading  { background: var(--warning)  !important; color: var(--dark) !important; border-bottom: none !important; }
+.panel-danger  > .panel-heading  { background: var(--danger)   !important; color: #fff !important; border-bottom: none !important; }
+
+/* ── Stat cards (dashboard) ─────────────────────────── */
+.stat-card {
+  border-radius: 12px;
+  padding: 22px 24px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 20px;
+  transition: transform .2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card .stat-icon { font-size: 42px; opacity: .35; }
+.stat-card .stat-value { font-size: 32px; font-weight: 700; line-height: 1; }
+.stat-card .stat-label { font-size: 13px; opacity: .85; margin-top: 4px; }
+.stat-blue   { background: linear-gradient(135deg, #2c7be5, #1a5fc8); }
+.stat-green  { background: linear-gradient(135deg, #00d97e, #00a85a); }
+.stat-yellow { background: linear-gradient(135deg, #f6c343, #e0a800); color: var(--dark) !important; }
+.stat-red    { background: linear-gradient(135deg, #e63757, #b91c3b); }
+
+/* ── Botones ────────────────────────────────────────── */
+.btn-primary { background: var(--primary) !important; border-color: var(--primary) !important; border-radius: 6px !important; }
+.btn-primary:hover { background: #1a5fc8 !important; }
+.btn-success { background: var(--success) !important; border-color: var(--success) !important; border-radius: 6px !important; color: #fff !important; }
+.btn-danger  { background: var(--danger)  !important; border-color: var(--danger)  !important; border-radius: 6px !important; }
+.btn { border-radius: 6px !important; font-weight: 500; }
+
+/* ── Tablas ─────────────────────────────────────────── */
+.table > thead > tr > th {
+  background: #f0f5ff;
+  color: var(--dark);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border-bottom: 2px solid #d0dff5 !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) { background: #fafcff; }
+.table > tbody > tr:hover > td { background: #eaf2ff !important; }
+
+/* ── Formularios ────────────────────────────────────── */
+.form-control { border-radius: 6px !important; border: 1px solid #d0dff5 !important; }
+.form-control:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(44,123,229,.15) !important; }
+
+/* ── Page header ────────────────────────────────────── */
+.page-header { border-bottom: 2px solid #e3ebf6 !important; margin-bottom: 24px; padding-bottom: 12px; }
+.page-header h2 { color: var(--dark); font-weight: 700; }
+
+/* ── Labels / badges ────────────────────────────────── */
+.label { border-radius: 4px !important; font-weight: 500 !important; padding: 3px 8px !important; }
+
+/* ── Alerts ─────────────────────────────────────────── */
+.alert { border-radius: 8px !important; border: none !important; }
+.alert-success { background: #d4f7e7 !important; color: #0a6640 !important; }
+.alert-warning { background: #fff3cd !important; color: #7d5a00 !important; }
+.alert-danger  { background: #fde0e5 !important; color: #8b0e26 !important; }
+
+/* ── Quick-access cards ─────────────────────────────── */
+.quick-card {
+  display: block;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  text-align: center;
+  color: var(--dark);
+  text-decoration: none !important;
+  transition: transform .2s, box-shadow .2s;
+  margin-bottom: 20px;
+}
+.quick-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(44,123,229,.15); color: var(--primary); }
+.quick-card i { font-size: 32px; margin-bottom: 10px; display: block; }
+.quick-card span { font-weight: 600; font-size: 14px; }

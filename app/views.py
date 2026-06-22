@@ -1,4 +1,4 @@
-from flask_appbuilder import ModelView, expose
+from flask_appbuilder import ModelView, expose, IndexView
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.baseviews import BaseView
 from flask_appbuilder.security.decorators import has_access
@@ -7,6 +7,43 @@ from sqlalchemy import func
 from . import db
 from .models import Categoria, Producto, Cliente, Orden, DetalleOrden, ServicioTecnico
 import json
+
+
+# ── Dashboard (Index) ────────────────────────────────────────────────────────
+
+class DashboardView(IndexView):
+    index_template = 'index.html'
+
+    @expose('/')
+    def index(self):
+        stats = {
+            'productos':           db.session.query(Producto).count(),
+            'ordenes':             db.session.query(Orden).count(),
+            'clientes':            db.session.query(Cliente).count(),
+            'servicios_pendientes': db.session.query(ServicioTecnico)
+                                     .filter(ServicioTecnico.estado.in_(['Pendiente', 'En Proceso']))
+                                     .count(),
+            'ingresos_total':      db.session.query(func.sum(Orden.total))
+                                     .filter(Orden.estado == 'Pagada').scalar() or 0,
+        }
+        ultimas_ordenes = (
+            db.session.query(Orden)
+            .order_by(Orden.fecha.desc())
+            .limit(8).all()
+        )
+        servicios_estados = (
+            db.session.query(
+                ServicioTecnico.estado,
+                func.count(ServicioTecnico.id).label('cantidad')
+            )
+            .group_by(ServicioTecnico.estado).all()
+        )
+        return self.render_template(
+            'index.html',
+            stats=stats,
+            ultimas_ordenes=ultimas_ordenes,
+            servicios_estados=servicios_estados,
+        )
 
 
 # ── CRUD Views ──────────────────────────────────────────────────────────────
@@ -68,9 +105,13 @@ class NuevaOrdenView(BaseView):
     @expose('/nueva', methods=['GET'])
     @has_access
     def nueva(self):
+        from flask_wtf.csrf import generate_csrf
         clientes = db.session.query(Cliente).order_by(Cliente.apellido).all()
         productos = db.session.query(Producto).filter(Producto.stock > 0).order_by(Producto.nombre).all()
-        return self.render_template('orden_nueva.html', clientes=clientes, productos=productos)
+        return self.render_template('orden_nueva.html',
+                                    clientes=clientes,
+                                    productos=productos,
+                                    csrf_token=generate_csrf())
 
     @expose('/guardar', methods=['POST'])
     @has_access
@@ -118,7 +159,7 @@ class NuevaOrdenView(BaseView):
         orden.total = round(total, 2)
         db.session.commit()
         flash(f'Orden #{orden.id} registrada correctamente — Total: Bs. {orden.total:.2f}', 'success')
-        return redirect('/orden/list')
+        return redirect('/ordenview/list/')
 
     @expose('/precio/<int:producto_id>')
     @has_access

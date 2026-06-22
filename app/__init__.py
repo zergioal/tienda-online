@@ -12,13 +12,14 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        ab = AppBuilder(app, db.session)
-
         from .models import Categoria, Producto, Cliente, Orden, DetalleOrden, ServicioTecnico
         from .views import (
+            DashboardView,
             CategoriaView, ProductoView, ClienteView,
             OrdenView, NuevaOrdenView, ServicioTecnicoView, ReportesView
         )
+
+        ab = AppBuilder(app, db.session, indexview=DashboardView)
 
         ab.add_view(
             CategoriaView, 'Categorías',
