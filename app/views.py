@@ -16,6 +16,10 @@ class DashboardView(IndexView):
 
     @expose('/')
     def index(self):
+        from flask_login import current_user
+        from flask import render_template as flask_render
+        if not current_user.is_authenticated:
+            return flask_render('landing.html')
         stats = {
             'productos':           db.session.query(Producto).count(),
             'ordenes':             db.session.query(Orden).count(),
