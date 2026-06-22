@@ -12,13 +12,14 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        ab = AppBuilder(app, db.session)
-
         from .models import Categoria, Producto, Cliente, Orden, DetalleOrden, ServicioTecnico
         from .views import (
+            DashboardView,
             CategoriaView, ProductoView, ClienteView,
-            OrdenView, ServicioTecnicoView, ReportesView
+            OrdenView, NuevaOrdenView, CatalogoView, ServicioTecnicoView, ReportesView
         )
+
+        ab = AppBuilder(app, db.session, indexview=DashboardView)
 
         ab.add_view(
             CategoriaView, 'Categorías',
@@ -39,11 +40,25 @@ def create_app():
             icon='fa-file-text', category='Ventas'
         )
         ab.add_view(
+            NuevaOrdenView, 'Nueva Venta',
+            icon='fa-plus-circle', category='Ventas',
+            href='/nueva-orden/nueva'
+        )
+        ab.add_view(
+            CatalogoView, 'Tienda',
+            icon='fa-store', category='Mi Tienda',
+            category_icon='fa-shopping-bag',
+            href='/catalogo/'
+        )
+        ab.add_link(
+            'Mi Carrito', icon='fa-shopping-cart',
+            category='Mi Tienda', href='/catalogo/carrito'
+        )
+        ab.add_view(
             ServicioTecnicoView, 'Servicio Técnico',
             icon='fa-wrench', category='Servicios',
             category_icon='fa-cogs'
         )
-
         ab.add_view(
             ReportesView, 'Panel de Reportes',
             icon='fa-bar-chart', category='Reportes',
@@ -66,13 +81,72 @@ def create_app():
             href='/reportes/servicios_por_estado'
         )
 
-        _ensure_roles(ab)
         db.create_all()
+        _setup_roles(ab)
 
     return app
 
 
-def _ensure_roles(ab):
+def _setup_roles(ab):
+    # Crear roles si no existen
     for role_name in ['Admin', 'Supervisor', 'Usuario']:
         if not ab.sm.find_role(role_name):
             ab.sm.add_role(role_name)
+
+    # ── Supervisor: servicios técnicos + órdenes/clientes (lectura) + reportes ──
+    _assign_perms(ab, 'Supervisor', [
+        # Servicios técnicos — gestión completa
+        ('can_list',                    'ServicioTecnicoView'),
+        ('can_show',                    'ServicioTecnicoView'),
+        ('can_add',                     'ServicioTecnicoView'),
+        ('can_edit',                    'ServicioTecnicoView'),
+        ('menu_access',                 'Servicios'),
+        ('menu_access',                 'Servicio Técnico'),
+        # Órdenes — solo lectura
+        ('can_list',                    'OrdenView'),
+        ('can_show',                    'OrdenView'),
+        # Clientes — solo lectura
+        ('can_list',                    'ClienteView'),
+        ('can_show',                    'ClienteView'),
+        ('menu_access',                 'Ventas'),
+        ('menu_access',                 'Órdenes'),
+        ('menu_access',                 'Clientes'),
+        # Reportes — acceso total
+        ('can_index',                   'ReportesView'),
+        ('can_ventas_por_mes',          'ReportesView'),
+        ('can_productos_mas_vendidos',  'ReportesView'),
+        ('can_servicios_por_estado',    'ReportesView'),
+        ('menu_access',                 'Reportes'),
+        ('menu_access',                 'Panel de Reportes'),
+        ('menu_access',                 'Ventas por Mes'),
+        ('menu_access',                 'Productos más Vendidos'),
+        ('menu_access',                 'Servicios por Estado'),
+    ])
+
+    # ── Usuario: tienda/catálogo + carrito + checkout ────────────────────────────
+    _assign_perms(ab, 'Usuario', [
+        ('can_index',     'CatalogoView'),
+        ('can_agregar',   'CatalogoView'),
+        ('can_quitar',    'CatalogoView'),
+        ('can_actualizar','CatalogoView'),
+        ('can_carrito',   'CatalogoView'),
+        ('can_checkout',  'CatalogoView'),
+        ('can_confirmacion', 'CatalogoView'),
+        ('menu_access',   'Mi Tienda'),
+        ('menu_access',   'Tienda'),
+        ('menu_access',   'Mi Carrito'),
+    ])
+
+
+def _assign_perms(ab, role_name, perms):
+    role = ab.sm.find_role(role_name)
+    if not role:
+        return
+    # Limpiar permisos anteriores antes de reasignar
+    role.permissions = []
+    db.session.flush()
+    for perm_name, view_name in perms:
+        pv = ab.sm.find_permission_view_menu(perm_name, view_name)
+        if pv:
+            ab.sm.add_permission_role(role, pv)
+    db.session.commit()

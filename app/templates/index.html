@@ -1,0 +1,164 @@
+{% extends "appbuilder/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Bienvenida -->
+  <div class="page-header" style="margin-top:10px;">
+    <h2><i class="fa fa-desktop"></i> TechStore &nbsp;<small>Panel de Control</small></h2>
+  </div>
+
+  <!-- Tarjetas de estadísticas -->
+  <div class="row">
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card stat-blue">
+        <div>
+          <div class="stat-value">{{ stats.productos }}</div>
+          <div class="stat-label">Productos en catálogo</div>
+        </div>
+        <i class="fa fa-laptop stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card stat-green">
+        <div>
+          <div class="stat-value">{{ stats.ordenes }}</div>
+          <div class="stat-label">Órdenes registradas</div>
+        </div>
+        <i class="fa fa-shopping-cart stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card stat-yellow">
+        <div>
+          <div class="stat-value">{{ stats.clientes }}</div>
+          <div class="stat-label">Clientes registrados</div>
+        </div>
+        <i class="fa fa-users stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card stat-red">
+        <div>
+          <div class="stat-value">{{ stats.servicios_pendientes }}</div>
+          <div class="stat-label">Servicios pendientes</div>
+        </div>
+        <i class="fa fa-wrench stat-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Ingresos y últimas órdenes -->
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-clock-o"></i> Últimas Órdenes</h3>
+        </div>
+        <div class="panel-body" style="padding:0;">
+          <table class="table table-hover" style="margin:0;">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th style="text-align:right;">Total (Bs.)</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for o in ultimas_ordenes %}
+              <tr>
+                <td>{{ o.id }}</td>
+                <td>{{ o.cliente }}</td>
+                <td>{{ o.fecha.strftime('%d/%m/%Y') }}</td>
+                <td style="text-align:right; font-weight:600;">{{ "%.2f"|format(o.total) }}</td>
+                <td>
+                  {% if o.estado == 'Pagada' %}
+                    <span class="label label-success">{{ o.estado }}</span>
+                  {% elif o.estado == 'Pendiente' %}
+                    <span class="label label-warning">{{ o.estado }}</span>
+                  {% else %}
+                    <span class="label label-danger">{{ o.estado }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" class="text-center text-muted" style="padding:20px;">Sin órdenes registradas</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-footer" style="background:#fff; border-top:1px solid #e3ebf6;">
+          <strong>Ingresos totales (órdenes pagadas):</strong>
+          <span style="font-size:18px; color:#2c7be5; font-weight:700; margin-left:10px;">
+            Bs. {{ "%.2f"|format(stats.ingresos_total) }}
+          </span>
+          <a href="/ordenview/list/" class="btn btn-primary btn-sm pull-right">
+            Ver todas <i class="fa fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-bolt"></i> Acceso Rápido</h3></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-6">
+              <a href="/nueva-orden/nueva" class="quick-card">
+                <i class="fa fa-plus-circle" style="color:#2c7be5;"></i>
+                <span>Nueva Venta</span>
+              </a>
+            </div>
+            <div class="col-xs-6">
+              <a href="/serviciotecnicoview/add" class="quick-card">
+                <i class="fa fa-wrench" style="color:#e63757;"></i>
+                <span>Nuevo Servicio</span>
+              </a>
+            </div>
+            <div class="col-xs-6">
+              <a href="/clienteview/add" class="quick-card">
+                <i class="fa fa-user-plus" style="color:#00d97e;"></i>
+                <span>Nuevo Cliente</span>
+              </a>
+            </div>
+            <div class="col-xs-6">
+              <a href="/reportes/index" class="quick-card">
+                <i class="fa fa-bar-chart" style="color:#f6c343;"></i>
+                <span>Reportes</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servicios técnicos por estado -->
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-cogs"></i> Servicios por Estado</h3></div>
+        <div class="panel-body" style="padding:12px 16px;">
+          {% for s in servicios_estados %}
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f0f0;">
+            <span>
+              {% if s.estado == 'Pendiente' %}<span class="label label-warning">{{ s.estado }}</span>
+              {% elif s.estado == 'En Proceso' %}<span class="label label-info">{{ s.estado }}</span>
+              {% elif s.estado == 'Listo' %}<span class="label label-success">{{ s.estado }}</span>
+              {% else %}<span class="label label-default">{{ s.estado }}</span>{% endif %}
+            </span>
+            <strong>{{ s.cantidad }}</strong>
+          </div>
+          {% else %}
+          <p class="text-muted text-center">Sin servicios</p>
+          {% endfor %}
+          <div style="margin-top:10px;">
+            <a href="/serviciotecnicoview/list/" class="btn btn-default btn-block btn-sm">Ver todos los servicios</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

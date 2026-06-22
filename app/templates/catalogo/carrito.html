@@ -1,0 +1,116 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container-fluid">
+
+  <div class="page-header">
+    <h2><i class="fa fa-shopping-cart"></i> Mi Carrito
+      <a href="/catalogo/" class="btn btn-default btn-sm pull-right"><i class="fa fa-arrow-left"></i> Seguir comprando</a>
+    </h2>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if not items %}
+  <div class="panel panel-default">
+    <div class="panel-body text-center" style="padding:60px;">
+      <i class="fa fa-shopping-cart" style="font-size:64px;color:#d0dff5;display:block;margin-bottom:16px;"></i>
+      <h4 style="color:#95aac9;">Tu carrito está vacío</h4>
+      <a href="/catalogo/" class="btn btn-primary" style="margin-top:16px;">Ver catálogo</a>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="row">
+
+    <!-- Tabla del carrito -->
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Productos seleccionados</h3></div>
+        <div class="panel-body" style="padding:0;">
+          <table class="table" style="margin:0;">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th style="text-align:center;">Cantidad</th>
+                <th style="text-align:right;">Precio unit.</th>
+                <th style="text-align:right;">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td style="vertical-align:middle;">
+                  <strong>{{ item.producto.nombre }}</strong><br>
+                  <small style="color:#95aac9;">{{ item.producto.categoria.nombre }}</small>
+                </td>
+                <td style="vertical-align:middle;text-align:center;">
+                  <form method="POST" action="/catalogo/actualizar/{{ item.producto.id }}" style="display:inline-flex;align-items:center;gap:6px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.producto.stock }}"
+                           style="width:60px;text-align:center;" class="form-control input-sm"
+                           onchange="this.form.submit()">
+                  </form>
+                </td>
+                <td style="vertical-align:middle;text-align:right;">Bs. {{ "%.2f"|format(item.producto.precio) }}</td>
+                <td style="vertical-align:middle;text-align:right;font-weight:700;color:#2c7be5;">Bs. {{ "%.2f"|format(item.subtotal) }}</td>
+                <td style="vertical-align:middle;text-align:center;">
+                  <form method="POST" action="/catalogo/quitar/{{ item.producto.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-danger btn-xs" title="Eliminar">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen + formulario checkout -->
+    <div class="col-md-4">
+      <div class="panel panel-primary">
+        <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-credit-card"></i> Finalizar Compra</h3></div>
+        <div class="panel-body">
+
+          <div style="background:#eaf2ff;border-radius:8px;padding:16px;margin-bottom:20px;text-align:center;">
+            <div style="font-size:13px;color:#6b7f96;margin-bottom:4px;">Total a pagar</div>
+            <div style="font-size:32px;font-weight:800;color:#2c7be5;">Bs. {{ "%.2f"|format(total) }}</div>
+          </div>
+
+          <form method="POST" action="/catalogo/checkout">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="form-group">
+              <label style="font-weight:600;">Nombre <span style="color:#e63757;">*</span></label>
+              <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;">Apellido <span style="color:#e63757;">*</span></label>
+              <input type="text" name="apellido" class="form-control" placeholder="Tu apellido" required>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;">Teléfono</label>
+              <input type="text" name="telefono" class="form-control" placeholder="Ej: 70011234">
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block btn-lg" style="margin-top:8px;">
+              <i class="fa fa-check"></i> Confirmar compra
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
