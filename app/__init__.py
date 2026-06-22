@@ -16,7 +16,7 @@ def create_app():
         from .views import (
             DashboardView,
             CategoriaView, ProductoView, ClienteView,
-            OrdenView, NuevaOrdenView, ServicioTecnicoView, ReportesView
+            OrdenView, NuevaOrdenView, CatalogoView, ServicioTecnicoView, ReportesView
         )
 
         ab = AppBuilder(app, db.session, indexview=DashboardView)
@@ -43,6 +43,16 @@ def create_app():
             NuevaOrdenView, 'Nueva Venta',
             icon='fa-plus-circle', category='Ventas',
             href='/nueva-orden/nueva'
+        )
+        ab.add_view(
+            CatalogoView, 'Tienda',
+            icon='fa-store', category='Mi Tienda',
+            category_icon='fa-shopping-bag',
+            href='/catalogo/'
+        )
+        ab.add_link(
+            'Mi Carrito', icon='fa-shopping-cart',
+            category='Mi Tienda', href='/catalogo/carrito'
         )
         ab.add_view(
             ServicioTecnicoView, 'Servicio Técnico',
@@ -113,22 +123,18 @@ def _setup_roles(ab):
         ('menu_access',                 'Servicios por Estado'),
     ])
 
-    # ── Usuario: catálogo (lectura) + realizar compras ──────────────────────────
+    # ── Usuario: tienda/catálogo + carrito + checkout ────────────────────────────
     _assign_perms(ab, 'Usuario', [
-        # Catálogo — solo lectura
-        ('can_list',    'ProductoView'),
-        ('can_show',    'ProductoView'),
-        ('can_list',    'CategoriaView'),
-        ('can_show',    'CategoriaView'),
-        ('menu_access', 'Catálogo'),
-        ('menu_access', 'Productos'),
-        ('menu_access', 'Categorías'),
-        # Nueva Venta — puede comprar
-        ('can_nueva',   'NuevaOrdenView'),
-        ('can_guardar', 'NuevaOrdenView'),
-        ('can_precio',  'NuevaOrdenView'),
-        ('menu_access', 'Ventas'),
-        ('menu_access', 'Nueva Venta'),
+        ('can_index',     'CatalogoView'),
+        ('can_agregar',   'CatalogoView'),
+        ('can_quitar',    'CatalogoView'),
+        ('can_actualizar','CatalogoView'),
+        ('can_carrito',   'CatalogoView'),
+        ('can_checkout',  'CatalogoView'),
+        ('can_confirmacion', 'CatalogoView'),
+        ('menu_access',   'Mi Tienda'),
+        ('menu_access',   'Tienda'),
+        ('menu_access',   'Mi Carrito'),
     ])
 
 
