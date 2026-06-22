@@ -142,7 +142,11 @@ def _assign_perms(ab, role_name, perms):
     role = ab.sm.find_role(role_name)
     if not role:
         return
+    # Limpiar permisos anteriores antes de reasignar
+    role.permissions = []
+    db.session.flush()
     for perm_name, view_name in perms:
         pv = ab.sm.find_permission_view_menu(perm_name, view_name)
         if pv:
             ab.sm.add_permission_role(role, pv)
+    db.session.commit()
