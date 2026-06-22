@@ -21,7 +21,7 @@
         <div class="panel-body">
           <p><strong>Productos en ranking:</strong> {{ datos|length }}</p>
           <p><strong>Unidades vendidas:</strong> {{ datos|sum(attribute='cantidad') }}</p>
-          <p><strong>Ingreso total:</strong> ${{ datos|sum(attribute='ingreso')|round(2) }}</p>
+          <p><strong>Ingreso total:</strong> Bs. {{ datos|sum(attribute='ingreso')|round(2) }}</p>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
             <td>{{ loop.index }}</td>
             <td>{{ d.producto }}</td>
             <td>{{ d.cantidad }}</td>
-            <td>${{ "%.2f"|format(d.ingreso) }}</td>
+            <td>Bs. {{ "%.2f"|format(d.ingreso) }}</td>
           </tr>
           {% else %}
           <tr><td colspan="4" class="text-center text-muted">Sin datos registrados</td></tr>
