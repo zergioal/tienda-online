@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TechStore — Diagrama Entidad-Relación</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 20px;
+    }
+    h1 { color: #12263f; font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    .subtitle { color: #6b7f96; font-size: 14px; margin-bottom: 24px; }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(18,38,63,.12);
+      padding: 0;
+      overflow: visible;
+    }
+
+    /* ── Tablas ER ── */
+    .er-table {
+      position: absolute;
+      width: 195px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(18,38,63,.15);
+      font-size: 12.5px;
+    }
+    .er-header {
+      background: #12263f;
+      color: #fff;
+      padding: 9px 12px;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      letter-spacing: .4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .er-header .icon { font-size: 15px; }
+    .er-row {
+      padding: 5px 10px;
+      border-bottom: 1px solid #edf0f5;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      height: 26px;
+    }
+    .er-row:last-child { border-bottom: none; }
+    .er-row.pk { background: #fffbeb; }
+    .er-row.fk { background: #eff6ff; }
+    .badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      letter-spacing: .3px;
+    }
+    .badge-pk { background: #fbbf24; color: #78350f; }
+    .badge-fk { background: #3b82f6; color: #fff; }
+    .fname { font-weight: 500; color: #1e3a5f; flex: 1; }
+    .ftype { color: #94a3b8; font-size: 10.5px; }
+
+    /* ── Leyenda ── */
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      font-size: 13px;
+      color: #6b7f96;
+      background: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>TechStore — Diagrama Entidad-Relación</h1>
+  <p class="subtitle">6 tablas &bull; 5 relaciones &bull; Claves foráneas resaltadas</p>
+
+  <div class="card" style="position:relative; width:980px; height:700px;">
+
+    <!-- ══════════════════ SVG RELACIONES ══════════════════ -->
+    <svg style="position:absolute;top:0;left:0;width:980px;height:700px;pointer-events:none;overflow:visible;">
+      <defs>
+        <!-- Flecha "muchos" -->
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linejoin="round"/>
+        </marker>
+        <!-- Punto "uno" -->
+        <marker id="dot" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <circle cx="4" cy="4" r="3" fill="#3b82f6"/>
+        </marker>
+      </defs>
+
+      <!-- ── 1) Categoria ──< Producto (vertical) ── -->
+      <path d="M 147,154 L 147,240"
+            fill="none" stroke="#3b82f6" stroke-width="2"
+            marker-start="url(#dot)" marker-end="url(#arr)"/>
+      <text x="153" y="197" font-size="11" fill="#3b82f6" font-weight="700">1</text>
+      <text x="153" y="233" font-size="11" fill="#3b82f6" font-weight="700">N</text>
+
+      <!-- ── 2) Cliente ──< Orden (curva) ── -->
+      <path d="M 688,133 C 640,133 582,295 582,323"
+            fill="none" stroke="#3b82f6" stroke-width="2"
+            marker-start="url(#dot)" marker-end="url(#arr)"/>
+      <text x="655" y="127" font-size="11" fill="#3b82f6" font-weight="700">1</text>
+      <text x="590" y="315" font-size="11" fill="#3b82f6" font-weight="700">N</text>
+
+      <!-- ── 3) Orden ──< DetalleOrden (curva) ── -->
+      <path d="M 478,407 C 478,455 358,455 358,510"
+            fill="none" stroke="#3b82f6" stroke-width="2"
+            marker-start="url(#dot)" marker-end="url(#arr)"/>
+      <text x="484" y="425" font-size="11" fill="#3b82f6" font-weight="700">1</text>
+      <text x="364" y="505" font-size="11" fill="#3b82f6" font-weight="700">N</text>
+
+      <!-- ── 4) Producto ──< DetalleOrden (curva) ── -->
+      <path d="M 147,432 C 147,490 258,590 258,603"
+            fill="none" stroke="#3b82f6" stroke-width="2"
+            marker-start="url(#dot)" marker-end="url(#arr)"/>
+      <text x="113" y="450" font-size="11" fill="#3b82f6" font-weight="700">1</text>
+      <text x="237" y="601" font-size="11" fill="#3b82f6" font-weight="700">N</text>
+
+      <!-- ── 5) Cliente ──< ServicioTecnico (vertical) ── -->
+      <path d="M 787,233 L 787,310"
+            fill="none" stroke="#3b82f6" stroke-width="2"
+            marker-start="url(#dot)" marker-end="url(#arr)"/>
+      <text x="793" y="260" font-size="11" fill="#3b82f6" font-weight="700">1</text>
+      <text x="793" y="303" font-size="11" fill="#3b82f6" font-weight="700">N</text>
+
+      <!-- Etiquetas de relación -->
+      <text x="80" y="200" font-size="10.5" fill="#94a3b8" font-style="italic">tiene</text>
+      <text x="590" y="220" font-size="10.5" fill="#94a3b8" font-style="italic">realiza</text>
+      <text x="415" y="470" font-size="10.5" fill="#94a3b8" font-style="italic">contiene</text>
+      <text x="155" y="520" font-size="10.5" fill="#94a3b8" font-style="italic">incluye</text>
+      <text x="795" y="275" font-size="10.5" fill="#94a3b8" font-style="italic">solicita</text>
+    </svg>
+
+    <!-- ══════════════ TABLA: Categoria ══════════════ -->
+    <!-- left=50, top=40, height=36+3*26=114 -->
+    <div class="er-table" style="left:50px; top:40px;">
+      <div class="er-header"><span class="icon">📁</span> Categoria</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">nombre</span><span class="ftype">VARCHAR(100)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">descripcion</span><span class="ftype">TEXT</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ TABLA: Producto ══════════════ -->
+    <!-- left=50, top=240, height=36+6*26=192 -->
+    <div class="er-table" style="left:50px; top:240px;">
+      <div class="er-header"><span class="icon">💻</span> Producto</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">nombre</span><span class="ftype">VARCHAR(150)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">descripcion</span><span class="ftype">TEXT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">precio</span><span class="ftype">FLOAT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">stock</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row fk">
+        <span class="badge badge-fk">FK</span>
+        <span class="fname">categoria_id</span><span class="ftype">INTEGER</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ TABLA: Cliente ══════════════ -->
+    <!-- left=690, top=40, height=36+6*26=192 -->
+    <div class="er-table" style="left:690px; top:40px;">
+      <div class="er-header"><span class="icon">👤</span> Cliente</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">nombre</span><span class="ftype">VARCHAR(100)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">apellido</span><span class="ftype">VARCHAR(100)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">email</span><span class="ftype">VARCHAR(150)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">telefono</span><span class="ftype">VARCHAR(20)</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">direccion</span><span class="ftype">TEXT</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ TABLA: Orden ══════════════ -->
+    <!-- left=380, top=240, height=36+5*26=166 -->
+    <div class="er-table" style="left:380px; top:240px;">
+      <div class="er-header"><span class="icon">🛒</span> Orden</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">fecha</span><span class="ftype">DATETIME</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">total</span><span class="ftype">FLOAT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">estado</span><span class="ftype">VARCHAR(20)</span>
+      </div>
+      <div class="er-row fk">
+        <span class="badge badge-fk">FK</span>
+        <span class="fname">cliente_id</span><span class="ftype">INTEGER</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ TABLA: DetalleOrden ══════════════ -->
+    <!-- left=260, top=510, height=36+6*26=192 -->
+    <div class="er-table" style="left:260px; top:510px;">
+      <div class="er-header"><span class="icon">📋</span> DetalleOrden</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">cantidad</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">precio_unitario</span><span class="ftype">FLOAT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">subtotal</span><span class="ftype">FLOAT</span>
+      </div>
+      <div class="er-row fk">
+        <span class="badge badge-fk">FK</span>
+        <span class="fname">orden_id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row fk">
+        <span class="badge badge-fk">FK</span>
+        <span class="fname">producto_id</span><span class="ftype">INTEGER</span>
+      </div>
+    </div>
+
+    <!-- ══════════════ TABLA: ServicioTecnico ══════════════ -->
+    <!-- left=690, top=310, height=36+8*26=244 -->
+    <div class="er-table" style="left:690px; top:310px;">
+      <div class="er-header"><span class="icon">🔧</span> ServicioTecnico</div>
+      <div class="er-row pk">
+        <span class="badge badge-pk">PK</span>
+        <span class="fname">id</span><span class="ftype">INTEGER</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">fecha_ingreso</span><span class="ftype">DATETIME</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">fecha_entrega</span><span class="ftype">DATETIME</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">descripcion_problema</span><span class="ftype">TEXT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">diagnostico</span><span class="ftype">TEXT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">costo</span><span class="ftype">FLOAT</span>
+      </div>
+      <div class="er-row">
+        <span class="fname">estado</span><span class="ftype">VARCHAR(20)</span>
+      </div>
+      <div class="er-row fk">
+        <span class="badge badge-fk">FK</span>
+        <span class="fname">cliente_id</span><span class="ftype">INTEGER</span>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- Leyenda -->
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#fffbeb;border:1px solid #fbbf24;color:#78350f;">PK</span>
+      Clave Primaria
+    </div>
+    <div class="legend-item">
+      <span class="legend-badge" style="background:#eff6ff;border:1px solid #3b82f6;color:#1d4ed8;">FK</span>
+      Clave Foránea
+    </div>
+    <div class="legend-item">
+      <svg width="50" height="14">
+        <circle cx="5" cy="7" r="3" fill="#3b82f6"/>
+        <line x1="8" y1="7" x2="38" y2="7" stroke="#3b82f6" stroke-width="2"/>
+        <path d="M30,3 L40,7 L30,11" fill="none" stroke="#3b82f6" stroke-width="1.8"/>
+      </svg>
+      Relación 1 a N (uno a muchos)
+    </div>
+    <div class="legend-item" style="color:#94a3b8; font-style:italic; font-size:12px;">
+      DetalleOrden es tabla intermedia entre Orden y Producto
+    </div>
+  </div>
+
+</body>
+</html>
