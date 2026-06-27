@@ -45,6 +45,36 @@
       </div>
     </div>
   </div>
+
+  <!-- ── Pronósticos con IA ── -->
+  <div class="panel" style="border:2px solid #EA4335; border-radius:8px;">
+    <div class="panel-heading" style="background:linear-gradient(135deg,#EA4335,#FBBC04); color:#fff; border-radius:6px 6px 0 0;">
+      <h3 class="panel-title" style="font-size:15px;">
+        <i class="fa fa-magic"></i>&nbsp; Pronósticos con Inteligencia Artificial
+        <span style="float:right; font-size:11px; font-weight:400; opacity:.85;">Gemini 2.5 Flash · Operaciones</span>
+      </h3>
+    </div>
+    <div class="panel-body" style="background:#fff8f8;">
+      <div class="row">
+        {% for p in pronosticos %}
+        <div class="col-md-4">
+          <div style="background:#fff; border-left:4px solid #EA4335; border-radius:6px;
+                      padding:14px 16px; margin-bottom:8px;
+                      box-shadow:0 2px 8px rgba(234,67,53,.12);">
+            <div style="font-size:11px; font-weight:700; color:#EA4335; text-transform:uppercase;
+                        letter-spacing:.6px; margin-bottom:6px;">
+              Pronóstico {{ loop.index }}
+            </div>
+            <p style="margin:0; color:#1e3a5f; font-size:13.5px; line-height:1.55;">{{ p }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <p style="margin:8px 0 0; font-size:11px; color:#94a3b8;">
+        <i class="fa fa-info-circle"></i> Pronósticos operacionales generados con Google Gemini a partir del estado actual de los servicios técnicos.
+      </p>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>

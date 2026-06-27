@@ -352,6 +352,7 @@ class ReportesView(BaseView):
     @has_access
     def ventas_por_mes(self):
         from sqlalchemy import extract
+        from .ai_service import pronostico_ventas
         resultados = (
             db.session.query(
                 extract('year', Orden.fecha).label('anio'),
@@ -375,13 +376,16 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['periodo'] for d in datos])
         valores = json.dumps([d['ventas'] for d in datos])
+        pronosticos = pronostico_ventas(datos)
         return self.render_template('reports/ventas_por_mes.html',
-                                    datos=datos, labels=labels, valores=valores)
+                                    datos=datos, labels=labels, valores=valores,
+                                    pronosticos=pronosticos)
 
     # Reporte 2: Productos más vendidos
     @expose('/productos_mas_vendidos')
     @has_access
     def productos_mas_vendidos(self):
+        from .ai_service import pronostico_productos
         resultados = (
             db.session.query(
                 Producto.nombre,
@@ -406,13 +410,16 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['producto'] for d in datos])
         valores = json.dumps([d['cantidad'] for d in datos])
+        pronosticos = pronostico_productos(datos)
         return self.render_template('reports/productos_mas_vendidos.html',
-                                    datos=datos, labels=labels, valores=valores)
+                                    datos=datos, labels=labels, valores=valores,
+                                    pronosticos=pronosticos)
 
     # Reporte 3: Servicios técnicos por estado
     @expose('/servicios_por_estado')
     @has_access
     def servicios_por_estado(self):
+        from .ai_service import pronostico_servicios
         resultados = (
             db.session.query(
                 ServicioTecnico.estado,
@@ -432,5 +439,7 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['estado'] for d in datos])
         valores = json.dumps([d['cantidad'] for d in datos])
+        pronosticos = pronostico_servicios(datos)
         return self.render_template('reports/servicios_por_estado.html',
-                                    datos=datos, labels=labels, valores=valores)
+                                    datos=datos, labels=labels, valores=valores,
+                                    pronosticos=pronosticos)
