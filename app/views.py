@@ -352,7 +352,6 @@ class ReportesView(BaseView):
     @has_access
     def ventas_por_mes(self):
         from sqlalchemy import extract
-        from .ai_service import pronostico_ventas
         resultados = (
             db.session.query(
                 extract('year', Orden.fecha).label('anio'),
@@ -376,16 +375,41 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['periodo'] for d in datos])
         valores = json.dumps([d['ventas'] for d in datos])
-        pronosticos = pronostico_ventas(datos)
         return self.render_template('reports/ventas_por_mes.html',
-                                    datos=datos, labels=labels, valores=valores,
-                                    pronosticos=pronosticos)
+                                    datos=datos, labels=labels, valores=valores)
+
+    @expose('/pronostico/ventas')
+    @has_access
+    def pronostico_ventas_json(self):
+        from sqlalchemy import extract
+        from .ai_service import pronostico_ventas
+        resultados = (
+            db.session.query(
+                extract('year', Orden.fecha).label('anio'),
+                extract('month', Orden.fecha).label('mes'),
+                func.count(Orden.id).label('total_ordenes'),
+                func.sum(Orden.total).label('total_ventas')
+            )
+            .filter(Orden.estado != 'Cancelada')
+            .group_by('anio', 'mes')
+            .order_by('anio', 'mes')
+            .all()
+        )
+        meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+        datos = [
+            {
+                'periodo': f"{meses[int(r.mes)-1]} {int(r.anio)}",
+                'ordenes': r.total_ordenes,
+                'ventas': round(r.total_ventas or 0, 2)
+            }
+            for r in resultados
+        ]
+        return jsonify({'pronosticos': pronostico_ventas(datos)})
 
     # Reporte 2: Productos más vendidos
     @expose('/productos_mas_vendidos')
     @has_access
     def productos_mas_vendidos(self):
-        from .ai_service import pronostico_productos
         resultados = (
             db.session.query(
                 Producto.nombre,
@@ -410,16 +434,41 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['producto'] for d in datos])
         valores = json.dumps([d['cantidad'] for d in datos])
-        pronosticos = pronostico_productos(datos)
         return self.render_template('reports/productos_mas_vendidos.html',
-                                    datos=datos, labels=labels, valores=valores,
-                                    pronosticos=pronosticos)
+                                    datos=datos, labels=labels, valores=valores)
+
+    @expose('/pronostico/productos')
+    @has_access
+    def pronostico_productos_json(self):
+        from .ai_service import pronostico_productos
+        resultados = (
+            db.session.query(
+                Producto.nombre,
+                func.sum(DetalleOrden.cantidad).label('total_vendido'),
+                func.sum(DetalleOrden.subtotal).label('total_ingreso')
+            )
+            .join(DetalleOrden, Producto.id == DetalleOrden.producto_id)
+            .join(Orden, Orden.id == DetalleOrden.orden_id)
+            .filter(Orden.estado != 'Cancelada')
+            .group_by(Producto.id, Producto.nombre)
+            .order_by(func.sum(DetalleOrden.cantidad).desc())
+            .limit(10)
+            .all()
+        )
+        datos = [
+            {
+                'producto': r.nombre,
+                'cantidad': r.total_vendido,
+                'ingreso': round(r.total_ingreso or 0, 2)
+            }
+            for r in resultados
+        ]
+        return jsonify({'pronosticos': pronostico_productos(datos)})
 
     # Reporte 3: Servicios técnicos por estado
     @expose('/servicios_por_estado')
     @has_access
     def servicios_por_estado(self):
-        from .ai_service import pronostico_servicios
         resultados = (
             db.session.query(
                 ServicioTecnico.estado,
@@ -439,7 +488,28 @@ class ReportesView(BaseView):
         ]
         labels = json.dumps([d['estado'] for d in datos])
         valores = json.dumps([d['cantidad'] for d in datos])
-        pronosticos = pronostico_servicios(datos)
         return self.render_template('reports/servicios_por_estado.html',
-                                    datos=datos, labels=labels, valores=valores,
-                                    pronosticos=pronosticos)
+                                    datos=datos, labels=labels, valores=valores)
+
+    @expose('/pronostico/servicios')
+    @has_access
+    def pronostico_servicios_json(self):
+        from .ai_service import pronostico_servicios
+        resultados = (
+            db.session.query(
+                ServicioTecnico.estado,
+                func.count(ServicioTecnico.id).label('cantidad'),
+                func.sum(ServicioTecnico.costo).label('total_costo')
+            )
+            .group_by(ServicioTecnico.estado)
+            .all()
+        )
+        datos = [
+            {
+                'estado': r.estado,
+                'cantidad': r.cantidad,
+                'costo': round(r.total_costo or 0, 2)
+            }
+            for r in resultados
+        ]
+        return jsonify({'pronosticos': pronostico_servicios(datos)})

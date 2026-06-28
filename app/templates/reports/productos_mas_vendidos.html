@@ -48,35 +48,14 @@
     </div>
   </div>
 
-  <!-- ── Pronósticos con IA ── -->
-  <div class="panel" style="border:2px solid #34A853; border-radius:8px;">
-    <div class="panel-heading" style="background:linear-gradient(135deg,#34A853,#FBBC04); color:#fff; border-radius:6px 6px 0 0;">
-      <h3 class="panel-title" style="font-size:15px;">
-        <i class="fa fa-magic"></i>&nbsp; Pronósticos con Inteligencia Artificial
-        <span style="float:right; font-size:11px; font-weight:400; opacity:.85;">Gemini 2.5 Flash · Inventario</span>
-      </h3>
-    </div>
-    <div class="panel-body" style="background:#f8fff9;">
-      <div class="row">
-        {% for p in pronosticos %}
-        <div class="col-md-4">
-          <div style="background:#fff; border-left:4px solid #34A853; border-radius:6px;
-                      padding:14px 16px; margin-bottom:8px;
-                      box-shadow:0 2px 8px rgba(52,168,83,.12);">
-            <div style="font-size:11px; font-weight:700; color:#34A853; text-transform:uppercase;
-                        letter-spacing:.6px; margin-bottom:6px;">
-              Recomendación {{ loop.index }}
-            </div>
-            <p style="margin:0; color:#1e3a5f; font-size:13.5px; line-height:1.55;">{{ p }}</p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      <p style="margin:8px 0 0; font-size:11px; color:#94a3b8;">
-        <i class="fa fa-info-circle"></i> Recomendaciones de inventario generadas con Google Gemini a partir de los productos más vendidos.
-      </p>
-    </div>
-  </div>
+  {% set endpoint  = '/reportes/pronostico/productos' %}
+  {% set color     = '#34A853' %}
+  {% set color2    = '#FBBC04' %}
+  {% set subtitulo = 'Inventario y Demanda' %}
+  {% set panel_id  = 'panel-ia-productos' %}
+  {% set btn_id    = 'btn-ia-productos' %}
+  {% include 'reports/_pronostico_btn.html' %}
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>

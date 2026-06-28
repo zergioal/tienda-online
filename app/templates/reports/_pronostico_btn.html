@@ -1,0 +1,110 @@
+{#
+  Parámetros:
+    endpoint  — URL del endpoint JSON, ej: '/reportes/pronostico/ventas'
+    color     — color principal del panel, ej: '#4285F4'
+    color2    — color secundario del gradiente, ej: '#34A853'
+    subtitulo — texto que aparece a la derecha del header
+    etiqueta  — 'Pronóstico' o 'Recomendación'
+    panel_id  — id único para el div del panel, ej: 'panel-ia-ventas'
+    btn_id    — id del botón
+#}
+
+<!-- Botón activador -->
+<div style="text-align:center; margin:20px 0 8px;">
+  <button id="{{ btn_id }}" onclick="cargarPronostico('{{ endpoint }}','{{ panel_id }}','{{ btn_id }}','{{ color }}')"
+          style="background:linear-gradient(135deg,{{ color }},{{ color2 }});
+                 color:#fff; border:none; border-radius:8px;
+                 padding:11px 28px; font-size:14px; font-weight:600;
+                 cursor:pointer; box-shadow:0 3px 12px rgba(0,0,0,.18);
+                 transition:opacity .2s;">
+    <i class="fa fa-magic"></i>&nbsp; Generar Pronóstico con IA
+  </button>
+  <p style="margin:6px 0 0; font-size:11px; color:#adb5bd;">
+    Usa Google Gemini &middot; puede tardar unos segundos
+  </p>
+</div>
+
+<!-- Panel de resultados (oculto hasta que se genere) -->
+<div id="{{ panel_id }}" style="display:none; border:2px solid {{ color }}; border-radius:10px; margin-top:4px; overflow:hidden;">
+  <div style="background:linear-gradient(135deg,{{ color }} 0%,{{ color2 }} 100%); padding:12px 18px; display:flex; align-items:center; justify-content:space-between;">
+    <span style="color:#fff; font-size:15px; font-weight:700;">
+      <i class="fa fa-magic"></i>&nbsp; Pronósticos con Inteligencia Artificial
+    </span>
+    <span style="color:rgba(255,255,255,.85); font-size:11px;">
+      Gemini 2.5 Flash &middot; {{ subtitulo }}
+    </span>
+  </div>
+  <div style="background:#f8faff; padding:18px 18px 12px;">
+    <!-- Loading -->
+    <div id="{{ panel_id }}-loading" style="text-align:center; padding:24px 0;">
+      <i class="fa fa-spinner fa-spin fa-2x" style="color:{{ color }};"></i>
+      <p style="margin:10px 0 0; color:#6b7f96; font-size:13px;">Consultando a Gemini...</p>
+    </div>
+    <!-- Cards de pronósticos (se llenan por JS) -->
+    <div id="{{ panel_id }}-cards" class="row" style="display:none;"></div>
+    <p id="{{ panel_id }}-footer" style="display:none; margin:12px 0 0; font-size:11px; color:#adb5bd;">
+      <i class="fa fa-info-circle"></i>
+      Generado automáticamente con Google Gemini a partir de los datos actuales.
+    </p>
+  </div>
+</div>
+
+<script>
+function cargarPronostico(url, panelId, btnId, color) {
+  var btn   = document.getElementById(btnId);
+  var panel = document.getElementById(panelId);
+
+  // Mostrar panel y deshabilitar botón
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>&nbsp; Consultando IA...';
+  btn.style.opacity = '0.7';
+  panel.style.display = 'block';
+
+  document.getElementById(panelId + '-loading').style.display = 'block';
+  document.getElementById(panelId + '-cards').style.display   = 'none';
+  document.getElementById(panelId + '-footer').style.display  = 'none';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var cards = document.getElementById(panelId + '-cards');
+      cards.innerHTML = '';
+      var etiquetas = ['Pronóstico 1','Pronóstico 2','Pronóstico 3'];
+      data.pronosticos.forEach(function(texto, i) {
+        cards.innerHTML +=
+          '<div class="col-md-4" style="margin-bottom:6px;">' +
+            '<div style="background:#fff;border-left:4px solid ' + color + ';border-radius:0 6px 6px 0;' +
+                        'padding:14px 16px;height:100%;box-shadow:0 2px 8px rgba(0,0,0,.08);">' +
+              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+                '<span style="background:' + color + ';color:#fff;font-size:11px;font-weight:800;' +
+                             'width:22px;height:22px;border-radius:50%;display:flex;' +
+                             'align-items:center;justify-content:center;flex-shrink:0;">' +
+                  (i + 1) +
+                '</span>' +
+                '<span style="font-size:11px;font-weight:700;color:' + color + ';text-transform:uppercase;letter-spacing:.6px;">' +
+                  etiquetas[i] +
+                '</span>' +
+              '</div>' +
+              '<p style="margin:0;color:#1e3a5f;font-size:13.5px;line-height:1.6;">' + texto + '</p>' +
+            '</div>' +
+          '</div>';
+      });
+
+      document.getElementById(panelId + '-loading').style.display = 'none';
+      cards.style.display = 'block';
+      document.getElementById(panelId + '-footer').style.display = 'block';
+
+      // Cambiar botón a "Regenerar"
+      btn.innerHTML = '<i class="fa fa-refresh"></i>&nbsp; Regenerar Pronóstico';
+      btn.disabled  = false;
+      btn.style.opacity = '1';
+    })
+    .catch(function(err) {
+      document.getElementById(panelId + '-loading').innerHTML =
+        '<p style="color:#EA4335;"><i class="fa fa-exclamation-triangle"></i> Error al conectar con la IA. Verifica tu API key en .env</p>';
+      btn.innerHTML = '<i class="fa fa-magic"></i>&nbsp; Reintentar';
+      btn.disabled  = false;
+      btn.style.opacity = '1';
+    });
+}
+</script>

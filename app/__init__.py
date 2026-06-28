@@ -115,15 +115,18 @@ def _setup_roles(ab):
         ('menu_access',                 'Órdenes'),
         ('menu_access',                 'Clientes'),
         # Reportes — acceso total
-        ('can_index',                   'ReportesView'),
-        ('can_ventas_por_mes',          'ReportesView'),
-        ('can_productos_mas_vendidos',  'ReportesView'),
-        ('can_servicios_por_estado',    'ReportesView'),
-        ('menu_access',                 'Reportes'),
-        ('menu_access',                 'Panel de Reportes'),
-        ('menu_access',                 'Ventas por Mes'),
-        ('menu_access',                 'Productos más Vendidos'),
-        ('menu_access',                 'Servicios por Estado'),
+        ('can_index',                       'ReportesView'),
+        ('can_ventas_por_mes',              'ReportesView'),
+        ('can_productos_mas_vendidos',      'ReportesView'),
+        ('can_servicios_por_estado',        'ReportesView'),
+        ('can_pronostico_ventas_json',      'ReportesView'),
+        ('can_pronostico_productos_json',   'ReportesView'),
+        ('can_pronostico_servicios_json',   'ReportesView'),
+        ('menu_access',                     'Reportes'),
+        ('menu_access',                     'Panel de Reportes'),
+        ('menu_access',                     'Ventas por Mes'),
+        ('menu_access',                     'Productos más Vendidos'),
+        ('menu_access',                     'Servicios por Estado'),
     ])
 
     # ── Usuario: tienda/catálogo + carrito + checkout ────────────────────────────
