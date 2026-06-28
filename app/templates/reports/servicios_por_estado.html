@@ -7,20 +7,25 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6">
+    <!-- Gráfica de dona -->
+    <div class="col-md-5">
       <div class="panel panel-warning">
         <div class="panel-heading"><h3 class="panel-title">Distribución por Estado</h3></div>
-        <div class="panel-body" style="max-height:350px; display:flex; justify-content:center;">
-          <canvas id="serviciosChart" style="max-width:320px;"></canvas>
+        <div class="panel-body" style="padding:20px;">
+          <div style="position:relative; height:280px; width:100%;">
+            <canvas id="serviciosChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-6">
+
+    <!-- Tabla de detalle -->
+    <div class="col-md-7">
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Detalle por Estado</h3></div>
         <div class="panel-body">
           <table class="table table-striped table-hover">
-            <thead><tr><th>Estado</th><th>Cantidad</th><th>Costo Total</th></tr></thead>
+            <thead><tr><th>Estado</th><th class="text-center">Cantidad</th><th class="text-right">Costo Total</th></tr></thead>
             <tbody>
               {% for d in datos %}
               <tr>
@@ -30,51 +35,38 @@
                   {% elif d.estado == 'Listo' %}<span class="label label-success">{{ d.estado }}</span>
                   {% else %}<span class="label label-default">{{ d.estado }}</span>{% endif %}
                 </td>
-                <td>{{ d.cantidad }}</td>
-                <td>Bs. {{ "%.2f"|format(d.costo) }}</td>
+                <td class="text-center">{{ d.cantidad }}</td>
+                <td class="text-right">Bs. {{ "%.2f"|format(d.costo) }}</td>
               </tr>
               {% else %}
               <tr><td colspan="3" class="text-center text-muted">Sin datos registrados</td></tr>
               {% endfor %}
             </tbody>
           </table>
-          <hr>
-          <p><strong>Total servicios:</strong> {{ datos|sum(attribute='cantidad') }}</p>
-          <p><strong>Costo total:</strong> Bs. {{ datos|sum(attribute='costo')|round(2) }}</p>
+          <hr style="margin:12px 0;">
+          <div class="row text-center">
+            <div class="col-xs-6">
+              <p class="text-muted" style="margin:0; font-size:12px;">Total servicios</p>
+              <p style="margin:0; font-size:22px; font-weight:700; color:#12263f;">{{ datos|sum(attribute='cantidad') }}</p>
+            </div>
+            <div class="col-xs-6">
+              <p class="text-muted" style="margin:0; font-size:12px;">Costo total</p>
+              <p style="margin:0; font-size:22px; font-weight:700; color:#12263f;">Bs. {{ datos|sum(attribute='costo')|round(2) }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Pronósticos con IA ── -->
-  <div class="panel" style="border:2px solid #EA4335; border-radius:8px;">
-    <div class="panel-heading" style="background:linear-gradient(135deg,#EA4335,#FBBC04); color:#fff; border-radius:6px 6px 0 0;">
-      <h3 class="panel-title" style="font-size:15px;">
-        <i class="fa fa-magic"></i>&nbsp; Pronósticos con Inteligencia Artificial
-        <span style="float:right; font-size:11px; font-weight:400; opacity:.85;">Gemini 2.5 Flash · Operaciones</span>
-      </h3>
-    </div>
-    <div class="panel-body" style="background:#fff8f8;">
-      <div class="row">
-        {% for p in pronosticos %}
-        <div class="col-md-4">
-          <div style="background:#fff; border-left:4px solid #EA4335; border-radius:6px;
-                      padding:14px 16px; margin-bottom:8px;
-                      box-shadow:0 2px 8px rgba(234,67,53,.12);">
-            <div style="font-size:11px; font-weight:700; color:#EA4335; text-transform:uppercase;
-                        letter-spacing:.6px; margin-bottom:6px;">
-              Pronóstico {{ loop.index }}
-            </div>
-            <p style="margin:0; color:#1e3a5f; font-size:13.5px; line-height:1.55;">{{ p }}</p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      <p style="margin:8px 0 0; font-size:11px; color:#94a3b8;">
-        <i class="fa fa-info-circle"></i> Pronósticos operacionales generados con Google Gemini a partir del estado actual de los servicios técnicos.
-      </p>
-    </div>
-  </div>
+  {% set endpoint  = '/reportes/pronostico/servicios' %}
+  {% set color     = '#EA4335' %}
+  {% set color2    = '#FBBC04' %}
+  {% set subtitulo = 'Análisis Operacional' %}
+  {% set panel_id  = 'panel-ia-servicios' %}
+  {% set btn_id    = 'btn-ia-servicios' %}
+  {% include 'reports/_pronostico_btn.html' %}
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -87,19 +79,20 @@ new Chart(ctx, {
     datasets: [{
       data: {{ valores|safe }},
       backgroundColor: [
-        'rgba(255, 193, 7, 0.8)',
-        'rgba(23, 162, 184, 0.8)',
-        'rgba(40, 167, 69, 0.8)',
-        'rgba(108, 117, 125, 0.8)'
+        'rgba(255, 193, 7, 0.85)',
+        'rgba(23, 162, 184, 0.85)',
+        'rgba(40, 167, 69, 0.85)',
+        'rgba(108, 117, 125, 0.85)'
       ],
-      borderWidth: 2
+      borderColor: '#fff',
+      borderWidth: 3
     }]
   },
   options: {
     responsive: true,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } } },
+    cutout: '60%'
   }
 });
 </script>
